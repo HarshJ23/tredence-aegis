@@ -42,46 +42,50 @@ export const designApi = {
     }
 
     try {
-      const response = await apiClient.post('/generate', { prompt, parameters });
+      // Use the dedicated endpoint for parameter updates
+      const response = await apiClient.post('/update-parameters', { 
+        prompt,
+        parameters
+      });
       return response.data;
     } catch (error) {
-      console.error('Update Design Error:', error);
+      console.error('Parameter update error:', error);
       throw new Error(error.response?.data?.detail || 'Failed to update design');
     }
   },
 
   // Get model file from a URL
   getModelFile: async (modelUrl) => {
-    if (!modelUrl || typeof modelUrl !== 'string') {
-      throw new Error('Model URL must be a valid string.');
-    }
-
     try {
-      // Remove leading slash if present
-      const cleanUrl = modelUrl.startsWith('/') ? modelUrl.slice(1) : modelUrl;
+      if (!modelUrl) {
+        throw new Error('No model URL provided');
+      }
 
-      // Handle both relative and absolute URLs
+      const cleanUrl = modelUrl.startsWith('/') ? modelUrl.substring(1) : modelUrl;
       const url = cleanUrl.startsWith('http') ? cleanUrl : `${API_BASE_URL}/${cleanUrl}`;
+      const cacheBuster = `?t=${Date.now()}`;
+      const fetchUrl = url + cacheBuster;
 
-      console.log('Fetching model from:', url);
+      console.log("Fetching model from:", fetchUrl);
 
-      const response = await fetch(url, {
+      const response = await fetch(fetchUrl, {
         method: 'GET',
         mode: 'cors',
         credentials: 'same-origin',
+        cache: 'no-cache',
       });
 
       if (!response.ok) {
-        console.error('Model fetch failed. Status:', response.status);
+        console.error("Response status:", response.status);
         throw new Error(`Failed to fetch model: ${response.statusText}`);
       }
 
       return await response.arrayBuffer();
     } catch (error) {
-      console.error('Model Download Error:', error);
+      console.error("Model download error:", error);
       throw new Error(`Model download failed: ${error.message}`);
     }
-  },
+  }
 };
 
 export default designApi;
