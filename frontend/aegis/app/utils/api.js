@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tredence-backend.onrender.com';
+const API_BASE_URL = 'https://tredence-backend.onrender.com';
 
 // Create axios instance with defaults
 const apiClient = axios.create({
