@@ -93,8 +93,8 @@ const WelcomeMessage = () => (
     </div>
     <h3 className="text-lg font-semibold">Welcome to CAD Design Copilot</h3>
     <p className="text-slate-600 text-sm">
-      Describe the 3D model you want to create, and I'll generate it for you.
-      Try something like "Create a simple chair" or "Design a gear with 12 teeth".
+      Describe the 3D model you want to create, and I&apos;ll generate it for you.
+      Try something like &quot;Create a simple chair&quot; or &quot;Design a gear with 12 teeth&quot;.
     </p>
   </Card>
 );

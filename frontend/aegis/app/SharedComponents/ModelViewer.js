@@ -232,14 +232,32 @@ const ModelViewer = ({ modelUrl, isLoading }) => {
     // Cleanup
     return () => {
       window.removeEventListener('resize', handleResize);
-      renderer.domElement.removeEventListener('click', handleMeasureClick);
-      cancelAnimationFrame(animationFrameRef.current);
-      if (rendererRef.current && containerRef.current) {
-        containerRef.current.removeChild(rendererRef.current.domElement);
+      
+      // Safely remove event listener 
+      const currentRenderer = rendererRef.current;
+      const currentContainer = containerRef.current;
+      
+      if (currentRenderer && currentRenderer.domElement) {
+        currentRenderer.domElement.removeEventListener('click', handleMeasureClick);
       }
-      scene.clear();
-      controls.dispose();
-      renderer.dispose();
+      
+      cancelAnimationFrame(animationFrameRef.current);
+      
+      if (currentRenderer && currentContainer) {
+        currentContainer.removeChild(currentRenderer.domElement);
+      }
+      
+      if (sceneRef.current) {
+        sceneRef.current.clear();
+      }
+      
+      if (controlsRef.current) {
+        controlsRef.current.dispose();
+      }
+      
+      if (currentRenderer) {
+        currentRenderer.dispose();
+      }
     };
   }, [measureMode]);
 
