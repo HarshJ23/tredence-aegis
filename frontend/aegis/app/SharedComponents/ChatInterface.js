@@ -88,15 +88,22 @@ const MessageBubble = ({ message, isUser }) => {
 
 const WelcomeMessage = () => (
   <Card className="flex flex-col items-center justify-center p-8 mx-auto max-w-md text-center gap-4 bg-gradient-to-br from-slate-50 to-slate-100">
-    <div className="rounded-full p-3 bg-blue-100">
-      <Info className="h-6 w-6 text-blue-600" />
-    </div>
-    <h3 className="text-lg font-semibold">Welcome to CAD Design Copilot</h3>
-    <p className="text-slate-600 text-sm">
-      Describe the 3D model you want to create, and I&apos;ll generate it for you.
-      Try something like &quot;Create a simple chair&quot; or &quot;Design a gear with 12 teeth&quot;.
-    </p>
-  </Card>
+  <div className="rounded-full p-3 bg-blue-100">
+    <Info className="h-6 w-6 text-blue-600" />
+  </div>
+  <h3 className="text-lg font-semibold">Welcome to CAD Design Copilot</h3>
+  <p className="text-slate-600 text-sm">
+    Describe the 3D model you want to create, and I&apos;ll generate it for you.
+  </p>
+  <div className="text-slate-700 text-sm mt-4">
+    <p><strong>Examples:</strong></p>
+    <ul className="mt-1 space-y-1">
+      <li>- Make a 60mm x 20mm x 10mm rectangular block with rounded corners (2mm fillets).</li>
+      <li>- Create cube with 10mm side length with fillets 2mm.</li>
+    </ul>
+  </div>
+</Card>
+
 );
 
 const DateSeparator = ({ date }) => (
