@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-const StatusIndicator = ({ backend = 'http://localhost:8000' }) => {
+const StatusIndicator = ({ backend = 'https://tredence-backend.onrender.com' }) => {
   const [status, setStatus] = useState('checking');
   const [message, setMessage] = useState('Checking connection...');
 
