@@ -57,6 +57,15 @@ const ModelViewer = ({ modelUrl, isLoading }) => {
   const [measurementResults, setMeasurementResults] = useState(null);
   const [modelInfo, setModelInfo] = useState(null);
   const [toolsExpanded, setToolsExpanded] = useState(true);
+  const steps = [
+    "Analyzing your design requirement...",
+    "Thinking...",
+    "Designing...",
+    "Rendering...",
+  ];
+  const [currentStep, setCurrentStep] = useState(0);
+  const stepIntervalRef = useRef(null);
+
 
   // Initialize Three.js scene
   useEffect(() => {
@@ -322,16 +331,22 @@ const ModelViewer = ({ modelUrl, isLoading }) => {
           viewUrl = modelUrl.replace(/\.step$|\.stp$/i, '.stl');
         }
         
+        // Cache-busting: append a timestamp query parameter
+        const timestamp = Date.now();
+        viewUrl += viewUrl.includes('?') ? `&v=${timestamp}` : `?v=${timestamp}`;
+        
         console.log("Fetching model for viewing from:", viewUrl);
         
-        // Get model file data
-        const modelData = await designApi.getModelFile(viewUrl);
-        
-        // Check if component is still mounted
-        if (!isMounted) return;
+        // Fetch model file using fetch with ngrok-skip-browser-warning header
+        const response = await fetch(viewUrl, {
+          headers: {
+            'ngrok-skip-browser-warning': 'true'
+          }
+        });
+        const arrayBuffer = await response.arrayBuffer();
         
         // Load the model using our utility
-        const { model, boundingBox, center, cameraDistance } = await ModelUtils.loadSTL(modelData);
+        const { model, boundingBox, center, cameraDistance } = await ModelUtils.loadSTL(arrayBuffer);
         
         // Check if component is still mounted
         if (!isMounted) return;
@@ -450,6 +465,21 @@ const ModelViewer = ({ modelUrl, isLoading }) => {
     }
     
   }, [viewMode]);
+
+  //loading use effect
+  useEffect(() => {
+    if (isLoading) {
+      setCurrentStep(0); // reset to first step
+  
+      stepIntervalRef.current = setInterval(() => {
+        setCurrentStep((prevStep) => (prevStep + 1) % steps.length);
+      }, 1500);
+    }
+  
+    return () => {
+      clearInterval(stepIntervalRef.current);
+    };
+  }, [isLoading]);
 
   // Toggle grid visibility
   useEffect(() => {
@@ -586,8 +616,8 @@ const ModelViewer = ({ modelUrl, isLoading }) => {
       
       {/* Measurement results */}
       {measureMode && measurementResults && (
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-white py-2 px-4 rounded-md shadow-md">
-          <p className="text-sm font-medium">Distance: {measurementResults.distance} {measurementResults.units}</p>
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2  bg-green-500 text-white py-2 px-4 rounded-md shadow-md">
+          <p className="text-sm font-medium bg-green-500 text-white">Distance: {measurementResults.distance} {measurementResults.units}</p>
         </div>
       )}
       
@@ -610,13 +640,15 @@ const ModelViewer = ({ modelUrl, isLoading }) => {
       
       {/* Loading overlay */}
       {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-slate-50 bg-opacity-70 z-10">
-          <div className="text-center">
-            <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-slate-700">Generating your design...</p>
-          </div>
-        </div>
-      )}
+  <div className="absolute inset-0 flex items-center justify-center bg-slate-50 bg-opacity-70 z-10">
+    <div className="text-center">
+      <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+      <p className="text-slate-700 text-lg transition-opacity duration-500 ease-in-out">
+        {steps[currentStep]}
+      </p>
+    </div>
+  </div>
+)}
       
       {/* Empty state */}
       {!modelUrl && !isLoading && (

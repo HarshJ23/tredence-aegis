@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://tredence-backend-2.onrender.com';
+const API_BASE_URL = 'https://f267-168-61-69-221.ngrok-free.app';
 
 // Create axios instance with defaults
 const apiClient = axios.create({
